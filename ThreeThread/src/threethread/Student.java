@@ -29,10 +29,6 @@ class Student {
         this.address = address;
         this.dateOfBirth = dateOfBirth;
     }
-//
-//    Student(String id, String name, String address, LocalDate dob) {
-//
-//    }
 
     public String getId() {
         return id;

@@ -17,6 +17,7 @@ public class Thread3 implements Runnable {
     private final BlockingQueue<Student> queue;
     private final BlockingQueue<Integer> outputQueue;
     BlockingQueue<Result> resultQueue = new LinkedBlockingQueue<>();
+    
     public Thread3(BlockingQueue<Student> queue, BlockingQueue<Integer> outputQueue) {
         this.queue = queue;
         this.outputQueue = outputQueue;
@@ -26,20 +27,24 @@ public class Thread3 implements Runnable {
     public void run() {
         try {
             while (true) {
-                Student digitSum = queue.take();
-                System.out.println("Thread 3: Received digit sum: " + digitSum);
+                // Lấy một sinh viên từ hàng đợi
                 Student student = queue.take();
                 System.out.println("Thread 3: Processing student " + student.getId());
 
+                // Nhận kết quả từ Thread2
+                int digitSum = outputQueue.take();
+                System.out.println("Thread 3: Received digit sum from Thread2: " + digitSum);
+                
                 // Kiểm tra tổng các chữ số trong ngày tháng năm sinh có phải là số nguyên tố không
                 LocalDate dob = student.getDateOfBirth();
                 int sum = calculateSumOfDigits(dob);
                 boolean isPrime = isPrimeNumber(sum);
                 System.out.println("Thread 3: Sum of digits in date of birth: " + sum);
                 System.out.println("Thread 3: Is sum of digits prime? " + isPrime);
-                ResultWriter resultWriter = new ResultWriter(resultQueue, "kq.xml");
-                Thread resultWriterThread = new Thread(resultWriter);
-                resultWriterThread.start();
+                
+                // Tạo đối tượng Result và đưa vào hàng đợi kết quả
+                Result result = new Result(student.getId(), student.getName(), sum, outputQueue.take(), isPrime);
+                resultQueue.put(result);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

@@ -36,16 +36,26 @@ public class ThreeThread {
         executor.submit(new Thread2(queue, outputQueue));
         // Chờ Thread2 kết thúc
         executor.shutdown();
-        try {
-            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         // Thêm Thread3 vào ExecutorService
         executor = Executors.newFixedThreadPool(3);
         executor.submit(new Thread3(queue,outputQueue));
         // Dừng ExecutorService sau khi tất cả các luồng đã hoàn thành
-        executor.shutdown();
+//        executor.shutdown();
+//        try {
+//            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+        // Khởi chạy luồng mới cho ResultWriter
+        String outputFileName = "kq.xml";
+        ResultWriter resultWriter = new ResultWriter(resultQueue, outputFileName);
+        Thread resultWriterThread = new Thread(resultWriter);
+        resultWriterThread.start();
     }
 
 }
